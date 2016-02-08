@@ -13,15 +13,36 @@ class RBTreeNode {
   typedef shared_ptr<RBTreeNode> Ptr;
   typedef shared_ptr<RBTreeNode> ConstPtr;
 
+  enum class Color {
+    RED,
+    BLACK,
+  };
+
   RBTreeNode(
     bool is_nil,
-    int key_val);
+    int height = -1,
+    int black_height = -1,
+    int key_val = -1,
+    int index = -1);
+
   ~RBTreeNode();
+
+  bool IsNIL() const { return is_nil_; }
+
+  string PrintString();
 
  private:
   bool is_nil_;
 
-  unique_ptr<int> key_val_;
+  int key_val_;
+
+  int index_;
+
+  Color color_;
+
+  int height_;
+
+  int black_height_;
 };
 
 } } // namespace rbtree, rbtreenode

@@ -5,6 +5,11 @@
 
 namespace rbtree {
 
+typedef struct RBTreeNodeInfo {
+  int key;
+  int index;
+} RBTreeNodeInfo;
+
 class RBTree {
  public:
   typedef shared_ptr<RBTree> Ptr;
@@ -12,6 +17,12 @@ class RBTree {
 
   RBTree();
   ~RBTree();
+
+  void Insert(const RBTreeNodeInfo& node_info);
+
+  bool Lookup(int key_val, rbtreenode::RBTreeNode **node_ptr);
+
+  void Print();
 
  private:
   unique_ptr<rbtreenode::RBTreeNode> root_;

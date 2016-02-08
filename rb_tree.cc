@@ -17,6 +17,20 @@ RBTree::~RBTree() {
   // TODO
 }
 
+void RBTree::Insert(const RBTreeNodeInfo& node_info) {
+  // TODO
+}
+
+bool RBTree::Lookup(
+  const int key_val,
+  RBTreeNode **const node_ptr) {
+  // TODO
+}
+
+void RBTree::Print() {
+  // TODO
+}
+
 } // namespace rbtree
 
 int main() {
