@@ -5,7 +5,14 @@
 
 namespace rbtree {
 
+using namespace std;
+
 typedef struct RBTreeNodeInfo {
+  explicit RBTreeNodeInfo(int in_key, int in_index) {
+    key = in_key;
+    index = in_index;
+  }
+
   int key;
   int index;
 } RBTreeNodeInfo;
@@ -13,7 +20,7 @@ typedef struct RBTreeNodeInfo {
 class RBTree {
  public:
   typedef shared_ptr<RBTree> Ptr;
-  typedef shared_ptr<RBTree> ConstPtr;
+  typedef shared_ptr<const RBTree> ConstPtr;
 
   RBTree();
   ~RBTree();
@@ -25,7 +32,7 @@ class RBTree {
   void Print();
 
  private:
-  unique_ptr<rbtreenode::RBTreeNode> root_;
+  shared_ptr<rbtreenode::RBTreeNode> root_;
 };
 
 } // namespace rbtree

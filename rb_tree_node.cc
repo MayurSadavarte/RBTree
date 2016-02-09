@@ -1,24 +1,22 @@
 #include "rb_tree_node.h"
 
 #include <sstream>
-
-using namespace std;
+#include <assert.h>
 
 namespace rbtree { namespace rbtreenode {
 
+using namespace std;
+
 RBTreeNode::RBTreeNode(
   const bool is_nil,
-  const int height,
-  const int black_height,
   const int key_val,
-  const int index) :
+  const int index,
+  const int height) :
   is_nil_(is_nil),
   key_val_(key_val),
   index_(index),
-  color_(Color::RED),
-  height_(height),
-  black_height_(black_height) {
-
+  color_(is_nil_ ? Color::BLACK : Color::RED),
+  height_(height) {
   // TODO
 }
 
@@ -27,10 +25,27 @@ RBTreeNode::~RBTreeNode() {
   // TODO
 }
 
-string RBTreeNode::PrintString() {
+void RBTreeNode::SetColor(Color color) {
+  color_ = color;
+}
+
+void RBTreeNode::SetParent(const Ptr& parent) {
+  parent_ = parent;
+}
+
+void RBTreeNode::SetLeftChild(const Ptr& left_child) {
+  left_child_ = left_child;
+}
+
+void RBTreeNode::SetRightChild(const Ptr& right_child) {
+  right_child_ = right_child;
+}
+
+string RBTreeNode::ToString() const {
   stringstream ss;
 
-  ss << "[ " << is_nil_ << ", " << key_val_ << ", "
+  ss << "[ " << (is_nil_ ? "NIL, " : "")
+     << key_val_ << ", "
      << index_ << ", "
      << (color_ == Color::RED ? "RED" : "BLACK")
      << ", " << height_

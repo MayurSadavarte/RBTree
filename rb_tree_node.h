@@ -4,14 +4,14 @@
 #include <iostream>
 #include <memory>
 
-using namespace std;
-
 namespace rbtree { namespace rbtreenode {
 
-class RBTreeNode {
+using namespace std;
+
+class RBTreeNode : public enable_shared_from_this<RBTreeNode> {
  public:
   typedef shared_ptr<RBTreeNode> Ptr;
-  typedef shared_ptr<RBTreeNode> ConstPtr;
+  typedef shared_ptr<const RBTreeNode> ConstPtr;
 
   enum class Color {
     RED,
@@ -20,16 +20,29 @@ class RBTreeNode {
 
   RBTreeNode(
     bool is_nil,
-    int height = -1,
-    int black_height = -1,
-    int key_val = -1,
-    int index = -1);
+    int key_val,
+    int index,
+    int height);
 
   ~RBTreeNode();
 
+  void SetColor(Color color);
+  void SetParent(const Ptr& parent);
+  void SetLeftChild(const Ptr& left_child);
+  void SetRightChild(const Ptr& right_child);
+
   bool IsNIL() const { return is_nil_; }
 
-  string PrintString();
+  string ToString() const;
+
+  int height() const { return height_; }
+  Ptr parent() const { return parent_; }
+  Ptr left_child() const { return left_child_; }
+  Ptr right_child() const { return right_child_; }
+
+  Ptr getptr() {
+    return enable_shared_from_this<RBTreeNode>::shared_from_this();
+  }
 
  private:
   bool is_nil_;
@@ -43,6 +56,12 @@ class RBTreeNode {
   int height_;
 
   int black_height_;
+
+  Ptr parent_;
+
+  Ptr left_child_;
+
+  Ptr right_child_;
 };
 
 } } // namespace rbtree, rbtreenode
