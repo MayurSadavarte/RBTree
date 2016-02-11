@@ -6,6 +6,16 @@
 
 namespace rbtree { namespace rbtreenode {
 
+typedef struct RBTreeNodeInfo {
+  explicit RBTreeNodeInfo(int in_key, int in_index) {
+    key = in_key;
+    index = in_index;
+  }
+
+  int key;
+  int index;
+} RBTreeNodeInfo;
+
 using namespace std;
 
 class RBTreeNode : public enable_shared_from_this<RBTreeNode> {
@@ -22,21 +32,25 @@ class RBTreeNode : public enable_shared_from_this<RBTreeNode> {
     bool is_nil,
     int key_val,
     int index,
-    int height);
+    int height,
+    RBTreeNode *parent = NULL);
 
   ~RBTreeNode();
+
+  void AttachChild(const RBTreeNodeInfo& child_info);
 
   void SetColor(Color color);
   void SetParent(const Ptr& parent);
   void SetLeftChild(const Ptr& left_child);
   void SetRightChild(const Ptr& right_child);
 
-  bool IsNIL() const { return is_nil_; }
-
   string ToString() const;
 
+  bool IsNIL() const { return is_nil_; }
+  int key_val() const { return key_val_; }
+  Color color() const { return color_; }
   int height() const { return height_; }
-  Ptr parent() const { return parent_; }
+  RBTreeNode *parent() const { return parent_; }
   Ptr left_child() const { return left_child_; }
   Ptr right_child() const { return right_child_; }
 
@@ -57,7 +71,7 @@ class RBTreeNode : public enable_shared_from_this<RBTreeNode> {
 
   int black_height_;
 
-  Ptr parent_;
+  RBTreeNode *parent_;
 
   Ptr left_child_;
 
