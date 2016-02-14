@@ -21,8 +21,10 @@ class RBTree {
 
   void Print();
 
+  void VerifyIntegrity();
+
  private:
-  shared_ptr<rbtreenode::RBTreeNode> root_;
+  void ReadjustTree(rbtreenode::RBTreeNode *node);
 };
 
 } // namespace rbtree
