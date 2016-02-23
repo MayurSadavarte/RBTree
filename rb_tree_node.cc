@@ -1,5 +1,6 @@
 #include "rb_tree_node.h"
 
+#include <list>
 #include <sstream>
 #include <assert.h>
 
@@ -215,6 +216,111 @@ int RBTreeNode::VerifySubtree(const int parent_height) {
 
 /*****************************************************************************/
 
+void RBTreeNode::Delete() {
+  cout << "Deleting node: " << ToString() << '\n';
+  assert(!is_nil_);
+
+  // Create a temporary shared_ptr to keep outselves alive until the
+  // function is executing.
+  Ptr temporary = getptr();
+
+  if (left_child_->IsNIL() && right_child_->IsNIL()) {
+    if (!parent_) {
+      assert(this == root_.get());
+      // Looks like we are deleting the 'root_'.
+      root_.reset();
+      return;
+    }
+
+    // TODO: case to be handled.
+    assert(color_ != Color::BLACK);
+
+    // Internal node.
+    parent_->DetachChild(this);
+    return;
+  }
+
+  bool one_child_nil = false;
+  RBTreeNode::Ptr non_nil_child = nullptr;
+  if (left_child_->IsNIL()) {
+    one_child_nil = true;
+    non_nil_child = right_child_;
+  }
+  if (right_child_->IsNIL()) {
+    assert(!one_child_nil);
+    one_child_nil = true;
+    assert(!non_nil_child);
+    non_nil_child = left_child_;
+  }
+
+  if (one_child_nil) {
+    assert(color_ == Color::BLACK);
+    if (!parent_) {
+      assert(this == root_.get());
+      non_nil_child->DecrementHeight();
+      root_ = non_nil_child;
+      if (root_->color() == Color::RED) {
+        root_->SetColor(Color::BLACK);
+      }
+      return;
+    }
+
+    non_nil_child->DecrementHeight();
+    non_nil_child->SetColor(color_);
+    if (parent_->raw_left_child() == this) {
+      parent_->SetLeftChild(non_nil_child);
+    } else {
+      assert(parent_->raw_right_child() == this);
+      parent_->SetRightChild(non_nil_child);
+    }
+    return;
+  }
+
+  RBTreeNode *const successor = MySuccessor();
+  CopyFieldsFrom(successor);
+
+  // TODO
+  PrintSubtree();
+  // TODO
+  successor->Delete();
+}
+
+/*****************************************************************************/
+
+void RBTreeNode::DetachChild(const RBTreeNode *child) {
+  if (left_child_.get() == child) {
+    left_child_.reset();
+    return;
+  }
+
+  assert(right_child_.get() == child);
+  right_child_.reset();
+}
+
+/*****************************************************************************/
+
+RBTreeNode *RBTreeNode::MySuccessor() {
+  assert(!right_child_->IsNIL());
+
+  Ptr node = right_child_;
+  while (!node->IsNIL()) {
+    node = node->left_child();
+  }
+
+  return node->parent_;
+}
+
+/*****************************************************************************/
+
+void RBTreeNode::CopyFieldsFrom(const RBTreeNode *const successor) {
+  assert(!is_nil_);
+
+  key_val_ = successor->key_val();
+  index_ = successor->index();
+}
+
+/*****************************************************************************/
+
 void RBTreeNode::SetColor(Color color) {
   color_ = color;
 }
@@ -256,6 +362,44 @@ string RBTreeNode::ToString() const {
      << ", " << black_height_ << " ]";
 
   return ss.str();
+}
+
+/*****************************************************************************/
+
+void RBTreeNode::PrintSubtree() {
+  cout << "Printing RBSubTree rooted at: " << ToString() << '\n';;
+  typedef list<RBTreeNode::Ptr> NodeList;
+  NodeList node_list;
+
+  stringstream ss;
+
+  node_list.emplace_back(getptr());
+
+  int prev_height = height_;
+  NodeList::const_iterator cnliter = node_list.begin();
+  while (cnliter != node_list.end()) {
+    const RBTreeNode::Ptr& node_ptr = *cnliter;
+    assert(node_ptr);
+
+    if (prev_height < node_ptr->height()) {
+      ss << '\n';
+    }
+    ss << node_ptr->ToString() << ", ";
+    prev_height = node_ptr->height();
+
+    if (node_ptr->left_child()) {
+      node_list.emplace_back(node_ptr->left_child());
+    }
+
+    if (node_ptr->right_child()) {
+      node_list.emplace_back(node_ptr->right_child());
+    }
+
+    ++cnliter;
+  }
+
+  cout << "RBSubTree has " << node_list.size() << " elements" << '\n';
+  cout << ss.str() << '\n';
 }
 
 /*****************************************************************************/

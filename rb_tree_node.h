@@ -6,6 +6,8 @@
 
 namespace rbtree { namespace rbtreenode {
 
+// Data structure which encapsulates '[key, data]' kept inside single node of
+// RBTree.
 typedef struct RBTreeNodeInfo {
   explicit RBTreeNodeInfo(int in_key, int in_index) {
     key = in_key;
@@ -37,27 +39,51 @@ class RBTreeNode : public enable_shared_from_this<RBTreeNode> {
 
   ~RBTreeNode();
 
+  // Add a child with 'child_info'.
   RBTreeNode *AttachChild(const RBTreeNodeInfo& child_info);
 
+  // Tree rotation methods.
   void RightRotate();
   void LeftRotate();
 
+  // Height adjustment methods.
   void IncrementHeight();
   void DecrementHeight();
 
+  // Verify integrity of RBSubTree rooted at this node.
   int VerifySubtree(int parent_height);
 
+  // Delete node.
+  void Delete();
+
+  // TODO
+  void DetachChild(const RBTreeNode *child);
+
+  // TODO
+  RBTreeNode *MySuccessor();
+
+  // TODO
+  void CopyFieldsFrom(const RBTreeNode *const successor);
+
+  // Setter methods.
   void SetColor(Color color);
   void SetParent(RBTreeNode *parent);
   void SetLeftChild(const Ptr& left_child);
   void SetRightChild(const Ptr& right_child);
 
+  // Return string version of this node.
   string ToString() const;
 
+  // TODO
+  void PrintSubtree();
+
+  // Return child other than 'child'.
   RBTreeNode *OtherChild(const RBTreeNode *child);
 
+  // Getter methods.
   bool IsNIL() const { return is_nil_; }
   int key_val() const { return key_val_; }
+  int index() const { return index_; }
   Color color() const { return color_; }
   int height() const { return height_; }
   RBTreeNode *parent() const { return parent_; }
@@ -66,6 +92,7 @@ class RBTreeNode : public enable_shared_from_this<RBTreeNode> {
   RBTreeNode *raw_left_child() const { return left_child_.get(); }
   RBTreeNode *raw_right_child() const { return right_child_.get(); }
 
+  // Get the shared_ptr.
   Ptr getptr() {
     return enable_shared_from_this<RBTreeNode>::shared_from_this();
   }

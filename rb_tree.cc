@@ -2,7 +2,6 @@
 #include "rb_tree.h"
 
 #include <assert.h>
-#include <list>
 #include <sstream>
 
 using namespace std;
@@ -191,6 +190,22 @@ bool RBTree::Lookup(
 
 /*****************************************************************************/
 
+bool RBTree::Delete(const int key_val) {
+  RBTreeNode *node_ptr = NULL;
+
+  if (!Lookup(key_val, &node_ptr)) {
+    cout << "RBTree doesn't contain " << key_val;
+    return false;
+  }
+
+  assert(node_ptr);
+  node_ptr->Delete();
+
+  return true;
+}
+
+/*****************************************************************************/
+
 void RBTree::Print() {
   cout << '\n' << "Printing RBTree: " << '\n';
   if (!root_) {
@@ -198,33 +213,7 @@ void RBTree::Print() {
     return;
   }
 
-  typedef list<RBTreeNode::Ptr> NodeList;
-  NodeList node_list;
-
-  stringstream ss;
-
-  node_list.emplace_back(root_);
-
-  NodeList::const_iterator cnliter = node_list.begin();
-  while (cnliter != node_list.end()) {
-    const RBTreeNode::Ptr& node_ptr = *cnliter;
-    assert(node_ptr);
-
-    ss << node_ptr->ToString() << ", ";
-
-    if (node_ptr->left_child()) {
-      node_list.emplace_back(node_ptr->left_child());
-    }
-
-    if (node_ptr->right_child()) {
-      node_list.emplace_back(node_ptr->right_child());
-    }
-
-    ++cnliter;
-  }
-
-  cout << "RBTree has " << node_list.size() << " elements" << '\n';
-  cout << ss.str() << '\n';
+  root_->PrintSubtree();
 }
 
 /*****************************************************************************/
@@ -245,7 +234,7 @@ void RBTree::VerifyIntegrity() {
 int main() {
   rbtree::RBTree::Ptr rbtree = make_shared<rbtree::RBTree>();
 
-  int keys[] = {7, 18, 10, 3, 8, 22, 26, 15};
+  int keys[] = {7, 18, 10, 3, 8, 22, 26, 15, 1024, 34567, 234, 56, 23, 8000};
   int num_keys = sizeof(keys) / sizeof(int);
 
   for (int ii = 0; ii < num_keys; ++ii) {
@@ -257,4 +246,16 @@ int main() {
   }
 
   rbtree->Print();
+
+  int delete_keys[] = {26, 1024, 8, 56};
+  num_keys = sizeof(delete_keys) / sizeof(int);
+
+  for (int ii = 0; ii < num_keys; ++ii) {
+    cout << "Deleting: [ " << keys[ii] << " ]" << '\n';
+    rbtree->Delete(keys[ii]);
+    rbtree->VerifyIntegrity();
+    rbtree->Print();
+  }
+
+  return 0;
 }
